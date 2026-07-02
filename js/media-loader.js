@@ -66,6 +66,23 @@ function renderVideoCard(item) {
   return card;
 }
 
+// Human-readable heading for a Logbook event group. Grouping keys stay as-is;
+// only the visible text changes.
+function formatEventHeading(event, eventItems) {
+  const dates = new Set(eventItems.map(i => i.date).filter(Boolean));
+  if (dates.size === 1) {
+    const parsed = new Date(`${[...dates][0]}T00:00:00`);
+    if (!Number.isNaN(parsed.valueOf())) {
+      return parsed.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+  }
+  if (event === 'unknown-event') return 'Undated';
+  return event
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export async function renderLogbook(container) {
   const items = await loadMedia();
   const byEvent = new Map();
@@ -77,7 +94,7 @@ export async function renderLogbook(container) {
   for (const [event, eventItems] of [...byEvent.entries()].sort().reverse()) {
     const section = document.createElement('section');
     const heading = document.createElement('h2');
-    heading.textContent = event;
+    heading.textContent = formatEventHeading(event, eventItems);
     section.append(heading);
     for (const item of eventItems) {
       section.append(item.type === 'video' ? renderVideoCard(item) : renderPhotoCard(item));

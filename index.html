@@ -8,6 +8,9 @@
   <meta property="og:description" content="Learn to harness the power of the wind and sail the bay — photos, videos, and highlight reels from BlindSail SF Bay.">
   <meta property="og:image" content="/media/placeholders/social-card.jpg">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
@@ -61,8 +64,25 @@
       <p class="mission">Learn to harness the power of the wind and sail the bay.</p>
       <p>An all-volunteer program at Oakland Yacht Club, Treasure Island, San Francisco Bay.</p>
     </section>
+
+    <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+
+    <!-- When highlight reels ship (phase 3), this empty state is replaced by the
+         Able Player embed of the latest reel. -->
+    <section class="latest-reel" aria-labelledby="reel-heading">
+      <h2 id="reel-heading">The latest from the water</h2>
+      <div class="empty-state-card">
+        <img class="empty-state-art" src="svg/sailboat-hero.svg" alt="" aria-hidden="true">
+        <p>
+          Our first highlight reel will appear here after the next sail.
+          Meanwhile, <a href="logbook.html">the Logbook</a> has photos and
+          videos from recent days on the water.
+        </p>
+      </div>
+    </section>
+
     <section class="chapter" aria-labelledby="chapter-welcome">
-      <img class="divider" src="svg/wave-divider.svg" alt="" width="400" height="40">
+      <img class="wave-divider divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
       <div class="chapter-text">
         <h2 id="chapter-welcome">Welcome Aboard</h2>
         <p>Sailors arrive at Oakland Yacht Club and meet the instructors and crew who'll take them out on the water.</p>
@@ -79,8 +99,8 @@
     </section>
 
     <section class="chapter" aria-labelledby="chapter-helm">
-      <img class="divider" src="svg/gull.svg" alt="" width="40" height="20">
       <div class="chapter-text">
+        <img class="gull-accent" src="svg/gull.svg" alt="" aria-hidden="true">
         <h2 id="chapter-helm">At the Helm</h2>
         <p>VI sailors take the wheel — driving, trimming sheets, and sailing the boat themselves.</p>
       </div>
@@ -106,7 +126,9 @@
     </script>
   </main>
 
-  <section aria-labelledby="how-to-use-heading">
+  <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+
+  <section class="how-to-use" aria-labelledby="how-to-use-heading">
     <h2 id="how-to-use-heading">How to use this page</h2>
     <p>
       Each photo has an audio-description button next to it that plays a short
