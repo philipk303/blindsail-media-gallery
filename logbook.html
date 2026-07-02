@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -37,7 +40,9 @@
     <div id="logbook-entries"></div>
     <script type="module">
       import { renderLogbook } from './js/media-loader.js';
-      renderLogbook(document.getElementById('logbook-entries'));
+      import { mountAblePlayers } from './js/able-player-init.js';
+      await renderLogbook(document.getElementById('logbook-entries'));
+      mountAblePlayers();
     </script>
   </main>
 

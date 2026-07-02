@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -37,7 +40,9 @@
     <div id="voices-cards"></div>
     <script type="module">
       import { renderVoices } from './js/media-loader.js';
-      renderVoices(document.getElementById('voices-cards'));
+      import { mountAblePlayers } from './js/able-player-init.js';
+      await renderVoices(document.getElementById('voices-cards'));
+      mountAblePlayers();
     </script>
   </main>
 
