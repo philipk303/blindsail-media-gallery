@@ -38,3 +38,8 @@ h1, h2, h3 { font-family: var(--font-display); font-weight: 300; color: var(--co
   outline: 3px solid var(--color-text-primary);
   outline-offset: 2px;
 }
+
+.reduced-motion * {
+  animation: none !important;
+  transition: none !important;
+}
