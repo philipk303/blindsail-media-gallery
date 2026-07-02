@@ -33,7 +33,12 @@
   </header>
 
   <main id="main">
-    <!-- page-specific content, Tasks 8-10 -->
+    <h1>The Logbook</h1>
+    <div id="logbook-entries"></div>
+    <script type="module">
+      import { renderLogbook } from './js/media-loader.js';
+      renderLogbook(document.getElementById('logbook-entries'));
+    </script>
   </main>
 
   <section aria-labelledby="how-to-use-heading">

@@ -33,7 +33,12 @@
   </header>
 
   <main id="main">
-    <!-- page-specific content, Tasks 8-10 -->
+    <h1>Voices</h1>
+    <div id="voices-cards"></div>
+    <script type="module">
+      import { renderVoices } from './js/media-loader.js';
+      renderVoices(document.getElementById('voices-cards'));
+    </script>
   </main>
 
   <section aria-labelledby="how-to-use-heading">
