@@ -1,6 +1,9 @@
 # Raw media stays out of the repo (large; processed renditions are pipeline output)
 *.zip
 BlindSail-JJ-1/
+6-13 Sailing -pk/
+*.mp4
+*.MP4
 *.HEIC
 *.heic
 *.mov
