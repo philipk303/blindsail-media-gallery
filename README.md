@@ -16,4 +16,4 @@ always ships the synthetic `media.json` placeholders instead.
 
 ## Live preview
 
-<Cloudflare Pages URL — fill in after connecting the repo in the Cloudflare dashboard>
+https://blindsail-media-gallery.philipk303.workers.dev
