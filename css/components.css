@@ -72,3 +72,20 @@
   cursor: pointer;
 }
 .ad-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Chapter split-panel layout (Task 10) */
+.chapter {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  margin-block: var(--space-4);
+}
+.chapter-text { position: sticky; top: var(--space-2); }
+.chapter-media img { width: 100%; height: auto; margin-block-end: var(--space-2); }
+.chapter .divider { grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+  .chapter { grid-template-columns: 1fr; }
+  .chapter-text { position: static; }
+}

@@ -61,7 +61,57 @@
       <p class="mission">Learn to harness the power of the wind and sail the bay.</p>
       <p>An all-volunteer program at Oakland Yacht Club, Treasure Island, San Francisco Bay.</p>
     </section>
-    <!-- page-specific content, Tasks 8-10 -->
+    <section class="chapter" aria-labelledby="chapter-welcome">
+      <img class="divider" src="svg/wave-divider.svg" alt="" width="400" height="40">
+      <div class="chapter-text">
+        <h2 id="chapter-welcome">Welcome Aboard</h2>
+        <p>Sailors arrive at Oakland Yacht Club and meet the instructors and crew who'll take them out on the water.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-welcome-aboard"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-castoff">
+      <div class="chapter-text">
+        <h2 id="chapter-castoff">Cast Off</h2>
+        <p>Lines come in, the slip falls away, and the crew gets underway onto the bay.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-cast-off"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-helm">
+      <img class="divider" src="svg/gull.svg" alt="" width="40" height="20">
+      <div class="chapter-text">
+        <h2 id="chapter-helm">At the Helm</h2>
+        <p>VI sailors take the wheel — driving, trimming sheets, and sailing the boat themselves.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-at-helm"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-dock">
+      <div class="chapter-text">
+        <h2 id="chapter-dock">Back at the Dock</h2>
+        <p>Back at Oakland Yacht Club: debrief, community, and celebration.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-back-at-dock"></div>
+    </section>
+
+    <script type="module">
+      async function loadChapterMedia() {
+        let response = await fetch('media.local.json').catch(() => null);
+        if (!response || !response.ok) response = await fetch('media.json');
+        const { items } = await response.json();
+        for (const item of items.filter(i => i.chapter)) {
+          const mount = document.getElementById(`chapter-media-${item.chapter}`);
+          if (!mount) continue;
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.alt = item.alt;
+          img.loading = 'lazy';
+          mount.append(img);
+        }
+      }
+      loadChapterMedia();
+    </script>
   </main>
 
   <section aria-labelledby="how-to-use-heading">
