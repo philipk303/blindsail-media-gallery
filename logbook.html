@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Logbook — BlindSail SF Bay</title>
+  <meta property="og:title" content="The Logbook — BlindSail SF Bay">
+  <meta property="og:description" content="Learn to harness the power of the wind and sail the bay — photos, videos, and highlight reels from BlindSail SF Bay.">
+  <meta property="og:image" content="/media/placeholders/social-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <p class="visually-hidden">
+    Across this page, a hand-drawn sailboat sketches itself in and bobs gently,
+    gulls glide by, and thin wind lines drift like a light breeze.
+  </p>
+
+  <header>
+    <nav aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="voices.html">Voices</a>
+      <a href="logbook.html" aria-current="page">The Logbook</a>
+      <button id="ambient-toggle" type="button" aria-pressed="false">
+        🌊 Sounds of the bay
+      </button>
+      <a href="https://blindsail.org">Learn more / sail with us</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <h1>The Logbook</h1>
+    <div id="logbook-entries"></div>
+    <script type="module">
+      import { renderLogbook } from './js/media-loader.js';
+      import { mountAblePlayers } from './js/able-player-init.js';
+      await renderLogbook(document.getElementById('logbook-entries'));
+      mountAblePlayers();
+    </script>
+  </main>
+
+  <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+
+  <section class="how-to-use" aria-labelledby="how-to-use-heading">
+    <h2 id="how-to-use-heading">How to use this page</h2>
+    <p>
+      Each photo has an audio-description button next to it that plays a short
+      spoken description on request — nothing plays automatically. Videos use
+      an accessible player with a caption toggle and an audio-description
+      toggle in the control bar. The "Sounds of the bay" button in the header
+      turns on an optional ambient soundscape; it is off by default and pauses
+      automatically whenever a video or audio description is playing. Every
+      part of this page can be reached and operated using only a keyboard.
+    </p>
+  </section>
+
+  <footer>
+    <a href="https://blindsail.org">Learn more / sail with us</a>
+    <p>BlindSail SF Bay — Oakland Yacht Club, Treasure Island, San Francisco Bay</p>
+  </footer>
+
+  <script type="module" src="js/reduced-motion.js"></script>
+  <script type="module" src="js/ambient-sound.js"></script>
+</body>
+</html>

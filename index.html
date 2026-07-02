@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Day on the Water — BlindSail SF Bay</title>
+  <meta property="og:title" content="A Day on the Water — BlindSail SF Bay">
+  <meta property="og:description" content="Learn to harness the power of the wind and sail the bay — photos, videos, and highlight reels from BlindSail SF Bay.">
+  <meta property="og:image" content="/media/placeholders/social-card.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ableplayer@5.0.0/build/ableplayer.min.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <p class="visually-hidden">
+    Across this page, a hand-drawn sailboat sketches itself in and bobs gently,
+    gulls glide by, and thin wind lines drift like a light breeze.
+  </p>
+
+  <header>
+    <nav aria-label="Primary">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="voices.html">Voices</a>
+      <a href="logbook.html">The Logbook</a>
+      <button id="ambient-toggle" type="button" aria-pressed="false">
+        🌊 Sounds of the bay
+      </button>
+      <a href="https://blindsail.org">Learn more / sail with us</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-art" aria-hidden="true">
+        <!-- inline copy of svg/sailboat-hero.svg (inlined so page CSS can animate it) -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <path id="hull" d="M120 220 Q200 250 280 220 L260 235 Q200 245 140 235 Z"
+                fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+          <path id="mast" d="M200 220 L200 80" fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+          <path id="sail" d="M200 90 Q250 140 205 215 Q200 150 200 90 Z"
+                fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+        <!-- inline copy of svg/wind-lines.svg -->
+        <svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <path class="wind-line" d="M20 30 Q80 20 140 30 T260 30" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+          <path class="wind-line" d="M20 60 Q80 50 140 60 T260 60" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 aria-label="BlindSail SF Bay — A Day on the Water">
+        <span class="word" aria-hidden="true">BlindSail</span>
+        <span class="word" aria-hidden="true">SF</span>
+        <span class="word" aria-hidden="true">Bay</span>
+      </h1>
+      <p class="visually-hidden">The title drifts in like a sail catching the wind, then settles.</p>
+      <p class="mission">Learn to harness the power of the wind and sail the bay.</p>
+      <p>An all-volunteer program at Oakland Yacht Club, Treasure Island, San Francisco Bay.</p>
+    </section>
+
+    <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+
+    <!-- When highlight reels ship (phase 3), this empty state is replaced by the
+         Able Player embed of the latest reel. -->
+    <section class="latest-reel" aria-labelledby="reel-heading">
+      <h2 id="reel-heading">The latest from the water</h2>
+      <div class="empty-state-card">
+        <img class="empty-state-art" src="svg/sailboat-hero.svg" alt="" aria-hidden="true">
+        <p>
+          Our first highlight reel will appear here after the next sail.
+          Meanwhile, <a href="logbook.html">the Logbook</a> has photos and
+          videos from recent days on the water.
+        </p>
+      </div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-welcome">
+      <img class="wave-divider divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+      <div class="chapter-text">
+        <h2 id="chapter-welcome">Welcome Aboard</h2>
+        <p>Sailors arrive at Oakland Yacht Club and meet the instructors and crew who'll take them out on the water.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-welcome-aboard"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-castoff">
+      <div class="chapter-text">
+        <h2 id="chapter-castoff">Cast Off</h2>
+        <p>Lines come in, the slip falls away, and the crew gets underway onto the bay.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-cast-off"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-helm">
+      <div class="chapter-text">
+        <img class="gull-accent" src="svg/gull.svg" alt="" aria-hidden="true">
+        <h2 id="chapter-helm">At the Helm</h2>
+        <p>VI sailors take the wheel — driving, trimming sheets, and sailing the boat themselves.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-at-helm"></div>
+    </section>
+
+    <section class="chapter" aria-labelledby="chapter-dock">
+      <div class="chapter-text">
+        <h2 id="chapter-dock">Back at the Dock</h2>
+        <p>Back at Oakland Yacht Club: debrief, community, and celebration.</p>
+      </div>
+      <div class="chapter-media" id="chapter-media-back-at-dock"></div>
+    </section>
+
+    <script type="module">
+      import { loadMedia, renderPhotoCard } from './js/media-loader.js';
+      const items = await loadMedia();
+      for (const item of items.filter(i => i.chapter && i.type === 'photo')) {
+        const mount = document.getElementById(`chapter-media-${item.chapter}`);
+        if (!mount) continue;
+        mount.append(renderPhotoCard(item));
+      }
+    </script>
+  </main>
+
+  <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
+
+  <section class="how-to-use" aria-labelledby="how-to-use-heading">
+    <h2 id="how-to-use-heading">How to use this page</h2>
+    <p>
+      Each photo has an audio-description button next to it that plays a short
+      spoken description on request — nothing plays automatically. Videos use
+      an accessible player with a caption toggle and an audio-description
+      toggle in the control bar. The "Sounds of the bay" button in the header
+      turns on an optional ambient soundscape; it is off by default and pauses
+      automatically whenever a video or audio description is playing. Every
+      part of this page can be reached and operated using only a keyboard.
+    </p>
+  </section>
+
+  <footer>
+    <a href="https://blindsail.org">Learn more / sail with us</a>
+    <p>BlindSail SF Bay — Oakland Yacht Club, Treasure Island, San Francisco Bay</p>
+  </footer>
+
+  <script type="module" src="js/reduced-motion.js"></script>
+  <script type="module" src="js/ambient-sound.js"></script>
+</body>
+</html>

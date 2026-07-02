@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "id": "logbook-01-welcome",
+      "type": "photo",
+      "src": "media/placeholders/welcome-aboard.jpg",
+      "alt": "Sample placeholder photo — Welcome Aboard chapter",
+      "caption": "Sample caption — replace once the publishing skill ships real items.",
+      "adAudio": null,
+      "chapter": "welcome-aboard",
+      "event": "sample-event-2026-07-01",
+      "date": "2026-07-01"
+    },
+    {
+      "id": "voices-david-cook",
+      "type": "video",
+      "youtubeId": null,
+      "poster": "media/placeholders/voices-david.jpg",
+      "caption": "Sample placeholder — David Cook debrief interview",
+      "vtt": null,
+      "adTrack": null,
+      "transcript": "Transcript will be added once the real interview video is published.",
+      "person": "David Cook"
+    },
+    {
+      "id": "voices-priscilla-aguiar",
+      "type": "video",
+      "youtubeId": null,
+      "poster": "media/placeholders/voices-priscilla.jpg",
+      "caption": "Sample placeholder — Priscilla Aguiar debrief interview",
+      "vtt": null,
+      "adTrack": null,
+      "transcript": "Transcript will be added once the real interview video is published.",
+      "person": "Priscilla Aguiar"
+    },
+    {
+      "id": "logbook-01-photo",
+      "type": "photo",
+      "src": "media/placeholders/logbook-01.jpg",
+      "alt": "Sample placeholder photo for a Logbook entry",
+      "caption": "Sample Logbook photo — sailing day recap.",
+      "adAudio": null,
+      "chapter": null,
+      "event": "sample-event-2026-07-01",
+      "date": "2026-07-01"
+    }
+  ]
+}

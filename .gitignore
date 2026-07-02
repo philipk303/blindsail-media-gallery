@@ -8,3 +8,7 @@ BlindSail-JJ-1/
 *.heic
 *.mov
 *.MOV
+
+# Local-only real-media QA (never committed/deployed)
+media/local/
+media.local.json

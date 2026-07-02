@@ -1,0 +1,35 @@
+:root {
+  /* Canvas */
+  --color-canvas: #FFFFFF;
+  --color-canvas-warm: #FAFBFC;
+
+  /* Water blues */
+  --color-surface-pale: #E3F2FB;
+  --color-surface-foam: #CAE9FF;
+  --color-line-art: #5FA8D3;       /* decorative SVG strokes only — fails AA as text */
+  --color-text-secondary: #3E7A9E; /* darkened breeze blue, ~4.7:1 on white, AA */
+  --color-text-primary: #1B4965;   /* ~9.6:1 on white, AAA */
+  --color-control: #1B4965;
+
+  /* Type */
+  --font-display: "Josefin Sans", sans-serif;
+  --font-body: "Nunito Sans", sans-serif;
+  --font-weight-body-floor: 400; /* never below this under 28px */
+
+  /* Spacing */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 2rem;
+  --space-4: 4rem;
+
+  /* Motion */
+  --duration-slow: 8s;
+  --duration-medium: 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-slow: 0s;
+    --duration-medium: 0s;
+  }
+}

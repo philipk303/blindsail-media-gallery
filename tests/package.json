@@ -1,0 +1,13 @@
+{
+  "name": "blindsail-shell-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.48.0",
+    "http-server": "^14.1.1"
+  }
+}

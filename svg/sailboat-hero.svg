@@ -1,0 +1,7 @@
+<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <path id="hull" d="M120 220 Q200 250 280 220 L260 235 Q200 245 140 235 Z"
+        fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+  <path id="mast" d="M200 220 L200 80" fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+  <path id="sail" d="M200 90 Q250 140 205 215 Q200 150 200 90 Z"
+        fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linejoin="round"/>
+</svg>

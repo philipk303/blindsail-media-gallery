@@ -61,9 +61,9 @@ Target: WCAG 2.1 AA + Section 508, verified by axe scan plus a manual NVDA pass 
 
 ## Video Hosting — YouTube
 
-The org lives in the Google Workspace universe, so video is hosted on the **org's YouTube channel**:
+BlindSail has no YouTube channel of its own, so video is hosted on the site owner's personal YouTube account (**philipk303**) as **unlisted** uploads (updated 2026-07-01; supersedes the original org-channel assumption):
 
-- The publishing skill uploads processed videos and highlight reels via the YouTube Data API (unlisted or public per item — org's call; unlisted still embeds fine).
+- The publishing skill uploads processed videos and highlight reels via the YouTube Data API using philipk303@gmail.com credentials, unlisted by default (unlisted still embeds fine and stays off the account's public page).
 - On the page, every video is embedded through **Able Player's YouTube integration**, which keeps our accessible controls, caption track, and AD track regardless of YouTube's own player limitations.
 - Benefits: free, unlimited, in-house for the org, no separate storage service; YouTube also becomes a secondary discovery channel for the reels.
 - Poster images and photos live in the site repo; no other media storage service needed.
