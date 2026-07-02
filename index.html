@@ -96,21 +96,13 @@
     </section>
 
     <script type="module">
-      async function loadChapterMedia() {
-        let response = await fetch('media.local.json').catch(() => null);
-        if (!response || !response.ok) response = await fetch('media.json');
-        const { items } = await response.json();
-        for (const item of items.filter(i => i.chapter)) {
-          const mount = document.getElementById(`chapter-media-${item.chapter}`);
-          if (!mount) continue;
-          const img = document.createElement('img');
-          img.src = item.src;
-          img.alt = item.alt;
-          img.loading = 'lazy';
-          mount.append(img);
-        }
+      import { loadMedia, renderPhotoCard } from './js/media-loader.js';
+      const items = await loadMedia();
+      for (const item of items.filter(i => i.chapter && i.type === 'photo')) {
+        const mount = document.getElementById(`chapter-media-${item.chapter}`);
+        if (!mount) continue;
+        mount.append(renderPhotoCard(item));
       }
-      loadChapterMedia();
     </script>
   </main>
 

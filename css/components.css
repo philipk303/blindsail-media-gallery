@@ -46,6 +46,19 @@
   opacity: 1; transform: none; animation: none;
 }
 
+/* Reduced motion must not depend on JS: replicate the .reduced-motion
+   overrides in a plain media query (belt and suspenders with reduced-motion.js). */
+@media (prefers-reduced-motion: reduce) {
+  #hull, #mast, #sail {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .wind-line { animation: none; }
+  .hero h1 .word {
+    opacity: 1; transform: none; animation: none;
+  }
+}
+
 #ambient-toggle {
   background: var(--color-surface-pale);
   color: var(--color-text-primary);
@@ -61,6 +74,12 @@
 
 /* Media cards (Task 8) */
 .media-card { margin-block: var(--space-3); max-width: 600px; }
+.media-card img,
+.chapter-media img {
+  /* Layout-reserving placeholder tint while images load */
+  min-height: 200px;
+  background: var(--color-surface-pale);
+}
 .media-card img { width: 100%; height: auto; border-radius: 4px; }
 .ad-button {
   background: var(--color-canvas);

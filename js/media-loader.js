@@ -1,15 +1,32 @@
 import { createAdButton } from './ad-button.js';
 
-async function loadMedia() {
-  const localResponse = await fetch('media.local.json').catch(() => null);
-  if (localResponse && localResponse.ok) {
-    return (await localResponse.json()).items;
-  }
-  const response = await fetch('media.json');
-  return (await response.json()).items;
+async function fetchItems(url) {
+  const response = await fetch(url);
+  if (!response.ok) return null;
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.includes('json')) return null;
+  const data = await response.json();
+  return Array.isArray(data.items) ? data.items : null;
 }
 
-function renderPhotoCard(item) {
+// Returns { items, source } where source is the URL the data came from.
+async function loadMediaWithSource() {
+  try {
+    const local = await fetchItems('media.local.json').catch(() => null);
+    if (local) return { items: local, source: 'media.local.json' };
+    const fallback = await fetchItems('media.json');
+    if (fallback) return { items: fallback, source: 'media.json' };
+  } catch (err) {
+    console.error('Failed to load media data:', err);
+  }
+  return { items: [], source: null };
+}
+
+export async function loadMedia() {
+  return (await loadMediaWithSource()).items;
+}
+
+export function renderPhotoCard(item) {
   const card = document.createElement('article');
   card.className = 'media-card';
   const img = document.createElement('img');
@@ -29,11 +46,18 @@ function renderVideoCard(item) {
   heading.textContent = item.caption;
   const player = document.createElement('div');
   player.className = 'able-player-mount';
-  player.dataset.youtubeId = item.youtubeId ?? '';
-  player.dataset.localSrc = item.localSrc ?? '';
-  player.dataset.poster = item.poster ?? '';
-  player.dataset.vtt = item.vtt ?? '';
-  player.dataset.adTrack = item.adTrack ?? '';
+  if (item.youtubeId || item.localSrc) {
+    player.dataset.youtubeId = item.youtubeId ?? '';
+    player.dataset.localSrc = item.localSrc ?? '';
+    player.dataset.poster = item.poster ?? '';
+    player.dataset.vtt = item.vtt ?? '';
+    player.dataset.adTrack = item.adTrack ?? '';
+  } else {
+    const placeholder = document.createElement('p');
+    placeholder.className = 'video-placeholder';
+    placeholder.textContent = 'Video coming soon.';
+    player.append(placeholder);
+  }
   const transcript = document.createElement('details');
   const summary = document.createElement('summary');
   summary.textContent = 'Transcript';
@@ -63,8 +87,15 @@ export async function renderLogbook(container) {
 }
 
 export async function renderVoices(container) {
-  const items = await loadMedia();
-  for (const item of items.filter(i => i.person)) {
+  const { items, source } = await loadMediaWithSource();
+  let voices = items.filter(i => i.person);
+  if (voices.length === 0 && source === 'media.local.json') {
+    // Local QA data may lack interview items; fall back to the published
+    // media.json so Voices never renders empty.
+    const fallback = await fetchItems('media.json').catch(() => null);
+    if (fallback) voices = fallback.filter(i => i.person);
+  }
+  for (const item of voices) {
     container.append(renderVideoCard(item));
   }
 }
