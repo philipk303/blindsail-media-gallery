@@ -12,3 +12,15 @@ BlindSail-JJ-1/
 # Local-only real-media QA (never committed/deployed)
 media/local/
 media.local.json
+
+# Publishing pipeline working state & secrets (never committed)
+# (secrets/* not secrets/ — ignoring the directory itself would make git never
+# descend into it, so the !.gitkeep negation would be dead.)
+pipeline/runs/
+secrets/*
+!secrets/.gitkeep
+config/*.local.json
+scripts/pipeline/node_modules/
+
+# Claude Code worktrees (local only) — keep skills/ committable
+.claude/worktrees/

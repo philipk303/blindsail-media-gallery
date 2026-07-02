@@ -1,0 +1,14 @@
+{
+  "name": "blindsail-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^5.3.0",
+    "@google-cloud/speech": "^6.7.0",
+    "googleapis": "^144.0.0"
+  }
+}

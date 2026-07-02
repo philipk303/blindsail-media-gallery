@@ -1,0 +1,26 @@
+{
+  "driveFolderId": "REPLACE_IN_TASK_2",
+  "gcpProjectId": "REPLACE_WITH_BLINDSAIL_GCP_PROJECT_ID",
+  "gwsAccount": "philipk303@gmail.com",
+  "gwsJs": "REPLACE_IN_TASK_8_STEP_3",
+  "tts": {
+    "languageCode": "en-US",
+    "voiceName": "en-US-Neural2-C",
+    "audioEncoding": "MP3"
+  },
+  "asr": {
+    "languageCode": "en-US",
+    "model": "latest_long"
+  },
+  "youtube": {
+    "privacyStatus": "unlisted",
+    "categoryId": "29"
+  },
+  "reel": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "photoSeconds": 4,
+    "crossfadeSeconds": 0.5
+  }
+}
