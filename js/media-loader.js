@@ -91,7 +91,9 @@ export async function renderLogbook(container) {
     if (!byEvent.has(key)) byEvent.set(key, []);
     byEvent.get(key).push(item);
   }
-  for (const [event, eventItems] of [...byEvent.entries()].sort().reverse()) {
+  const newestDate = eventItems => eventItems.reduce((max, i) => (i.date > max ? i.date : max), '');
+  const groups = [...byEvent.entries()].sort((a, b) => newestDate(b[1]).localeCompare(newestDate(a[1])));
+  for (const [event, eventItems] of groups) {
     const section = document.createElement('section');
     const heading = document.createElement('h2');
     heading.textContent = formatEventHeading(event, eventItems);
