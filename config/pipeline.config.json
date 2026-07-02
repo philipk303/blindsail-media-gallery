@@ -2,7 +2,7 @@
   "driveFolderId": "REPLACE_IN_TASK_2",
   "gcpProjectId": "REPLACE_WITH_BLINDSAIL_GCP_PROJECT_ID",
   "gwsAccount": "philipk303@gmail.com",
-  "gwsJs": "REPLACE_IN_TASK_8_STEP_3",
+  "gwsJs": "C:\\Users\\phili\\AppData\\Roaming\\npm\\node_modules\\@googleworkspace\\cli\\run.js",
   "tts": {
     "languageCode": "en-US",
     "voiceName": "en-US-Neural2-C",
