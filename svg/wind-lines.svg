@@ -1,0 +1,4 @@
+<svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <path class="wind-line" d="M20 30 Q80 20 140 30 T260 30" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+  <path class="wind-line" d="M20 60 Q80 50 140 60 T260 60" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,47 @@
+/* Hero art sizing */
+.hero-art svg {
+  display: block;
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+}
+
+/* Sailboat: sketch-in, then gentle bob */
+#hull, #mast, #sail {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: draw-in 2.5s ease-out forwards, bob var(--duration-slow) ease-in-out 2.5s infinite;
+}
+@keyframes draw-in { to { stroke-dashoffset: 0; } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* Wind lines: drifting dashes */
+.wind-line {
+  stroke-dasharray: 20 10;
+  animation: drift var(--duration-medium) linear infinite;
+}
+@keyframes drift { to { stroke-dashoffset: -30; } }
+
+/* Reduced motion: everything static */
+.reduced-motion #hull, .reduced-motion #mast, .reduced-motion #sail {
+  stroke-dashoffset: 0;
+  animation: none;
+}
+.reduced-motion .wind-line { animation: none; }
+
+/* Title: words blow in like a sail catching wind */
+.hero h1 .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-40px) rotate(-3deg);
+  animation: blow-in 1.2s ease-out forwards;
+}
+.hero h1 .word:nth-child(2) { animation-delay: 0.2s; }
+.hero h1 .word:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blow-in {
+  60% { transform: translateX(4px) rotate(1deg); }
+  to { opacity: 1; transform: translateX(0) rotate(0); }
+}
+.reduced-motion .hero h1 .word {
+  opacity: 1; transform: none; animation: none;
+}

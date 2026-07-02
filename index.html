@@ -33,6 +33,31 @@
   </header>
 
   <main id="main">
+    <section class="hero">
+      <div class="hero-art" aria-hidden="true">
+        <!-- inline copy of svg/sailboat-hero.svg (inlined so page CSS can animate it) -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <path id="hull" d="M120 220 Q200 250 280 220 L260 235 Q200 245 140 235 Z"
+                fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+          <path id="mast" d="M200 220 L200 80" fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round"/>
+          <path id="sail" d="M200 90 Q250 140 205 215 Q200 150 200 90 Z"
+                fill="none" stroke="#5FA8D3" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+        <!-- inline copy of svg/wind-lines.svg -->
+        <svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <path class="wind-line" d="M20 30 Q80 20 140 30 T260 30" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+          <path class="wind-line" d="M20 60 Q80 50 140 60 T260 60" fill="none" stroke="#5FA8D3" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 aria-label="BlindSail SF Bay — A Day on the Water">
+        <span class="word" aria-hidden="true">BlindSail</span>
+        <span class="word" aria-hidden="true">SF</span>
+        <span class="word" aria-hidden="true">Bay</span>
+      </h1>
+      <p class="visually-hidden">The title drifts in like a sail catching the wind, then settles.</p>
+      <p class="mission">Learn to harness the power of the wind and sail the bay.</p>
+      <p>An all-volunteer program at Oakland Yacht Club, Treasure Island, San Francisco Bay.</p>
+    </section>
     <!-- page-specific content, Tasks 8-10 -->
   </main>
 
