@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs } from '../reel.mjs';
+import { validateShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs, ambientVideoArgs, ambientSilenceArgs, mixAudioArgs } from '../reel.mjs';
 
 const cfg = { width: 1280, height: 720, fps: 30, photoSeconds: 4, crossfadeSeconds: 0.5 };
 
@@ -46,4 +46,27 @@ test('videoSegmentArgs trims with -ss/-to and freezes the last frame when narrat
   assert.ok(!exact[exact.indexOf('-vf') + 1].includes('tpad'));
   const extended = videoSegmentArgs('in.mp4', 'seg.mp4', 2, 7, 6.5, cfg);
   assert.ok(extended[extended.indexOf('-vf') + 1].includes('tpad=stop_mode=clone:stop_duration=1.5'));
+});
+
+test('ambientVideoArgs keeps the clip audio, drops video, and pads to the effective duration', () => {
+  const args = ambientVideoArgs('in.mp4', 'amb.mp3', 2, 7, 6.5);
+  assert.ok(args.includes('-vn')); // audio only
+  assert.ok(args[args.indexOf('-af') + 1].includes('apad=whole_dur=6.5')); // padded to effDur
+  assert.deepEqual([args[args.indexOf('-ar') + 1], args[args.indexOf('-ac') + 1]], ['24000', '1']); // 24kHz mono
+  assert.equal(args[args.indexOf('-t') + 1], '6.5');
+});
+
+test('ambientSilenceArgs emits exact-length 24kHz-mono silence for a photo slot', () => {
+  const args = ambientSilenceArgs('amb.mp3', 4);
+  assert.ok(args.join(' ').includes('anullsrc=r=24000:cl=mono'));
+  assert.equal(args[args.indexOf('-t') + 1], '4');
+});
+
+test('mixAudioArgs stream-copies video and ducks the ambient bed under the narration', () => {
+  const args = mixAudioArgs('silent.mp4', 'ambient.mp3', 'narration.mp3', 'reel.mp4');
+  const filter = args[args.indexOf('-filter_complex') + 1];
+  assert.ok(filter.includes('sidechaincompress')); // narration ducks the ambient
+  assert.ok(filter.includes('normalize=0'));        // narration stays at full level
+  assert.equal(args[args.indexOf('-c:v') + 1], 'copy'); // video not re-encoded
+  assert.deepEqual([args[args.indexOf('-map') + 1]], ['0:v:0']);
 });

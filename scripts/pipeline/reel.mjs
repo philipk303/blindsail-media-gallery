@@ -72,6 +72,37 @@ export function videoSegmentArgs(src, out, inS, outS, effDur, cfg) {
     '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-an', out];
 }
 
+// Ambient bed — a video clip keeps its OWN audio (wind, water, voices) for the
+// trimmed range, padded with silence out to the effective (possibly
+// frozen-extended) duration, normalized to 24kHz mono so it splices cleanly
+// with the narration bed of the same format.
+export function ambientVideoArgs(src, out, inS, outS, effDur) {
+  return ['-y', '-ss', String(inS), '-to', String(outS), '-i', src,
+    '-vn', '-af', `apad=whole_dur=${effDur}`, '-t', String(effDur),
+    '-ar', '24000', '-ac', '1', '-b:a', '48k', out];
+}
+
+// A photo segment has no audio — contribute exact-length silence so the ambient
+// track stays sample-aligned with the visuals and the narration.
+export function ambientSilenceArgs(out, effDur) {
+  return ['-y', '-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono',
+    '-t', String(effDur), '-b:a', '48k', out];
+}
+
+// Final mux: bed the clip ambient low (0.35), duck it further under the
+// narration via sidechain compression keyed by the narration, then sum
+// (normalize=0 keeps narration at full level) and limit to avoid clipping.
+// Video is stream-copied from the already-assembled silent reel.
+export function mixAudioArgs(silentReel, ambientTrack, narrTrack, out) {
+  const filter =
+    '[1:a]volume=0.35[amb];' +
+    '[amb][2:a]sidechaincompress=threshold=0.03:ratio=6:attack=15:release=250[duck];' +
+    '[duck][2:a]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.95[aout]';
+  return ['-y', '-i', silentReel, '-i', ambientTrack, '-i', narrTrack,
+    '-filter_complex', filter, '-map', '0:v:0', '-map', '[aout]',
+    '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', out];
+}
+
 // Adapter entry point.
 export async function main(isoDate) {
   const cfg = loadConfig();
@@ -140,13 +171,33 @@ export async function main(isoDate) {
   run(['-y', '-f', 'concat', '-safe', '0', '-i', narrConcatList,
     '-ar', '24000', '-ac', '1', '-b:a', '48k', narrTrack]);
 
-  // 5) Mux. Audio and video are the same length by construction, so no
-  //    -shortest (which risked truncating the final narration line).
-  const finalReel = path.join(paths.reel, `${eventId}-reel.mp4`);
-  run(['-y', '-i', silentReel, '-i', narrTrack, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k',
-    '-map', '0:v:0', '-map', '1:a:0', '-movflags', '+faststart', finalReel]);
+  // 5) Ambient bed: each video segment keeps its own audio (wind, water,
+  //    voices); photos contribute silence. Same effDurs, same 24kHz-mono format
+  //    as the narration, concatenated to one full-length track.
+  const ambFiles = [];
+  shotlist.segments.forEach((seg, idx) => {
+    const ambOut = path.join(paths.reel, `amb-${String(idx).padStart(3, '0')}.mp3`);
+    if (seg.kind === 'video') {
+      const item = byId.get(seg.id);
+      run(ambientVideoArgs(path.join(paths.root, item.rendition), ambOut, seg.in, seg.out, effDurs[idx]));
+    } else {
+      run(ambientSilenceArgs(ambOut, effDurs[idx]));
+    }
+    ambFiles.push(ambOut);
+  });
+  const ambConcatList = path.join(paths.reel, 'ambient.txt');
+  writeFileSync(ambConcatList, ambFiles.map(f => `file '${f.replace(/'/g, "'\\''")}'`).join('\n'));
+  const ambientTrack = path.join(paths.reel, 'ambient.mp3');
+  run(['-y', '-f', 'concat', '-safe', '0', '-i', ambConcatList,
+    '-ar', '24000', '-ac', '1', '-b:a', '48k', ambientTrack]);
 
-  // 6) Captions VTT from narration cues at the effective timings.
+  // 6) Mux: video stream-copied; audio = ambient bed ducked under narration.
+  //    All three tracks are the same length by construction, so no -shortest
+  //    (which risked truncating the final narration line).
+  const finalReel = path.join(paths.reel, `${eventId}-reel.mp4`);
+  run(mixAudioArgs(silentReel, ambientTrack, narrTrack, finalReel));
+
+  // 7) Captions VTT from narration cues at the effective timings.
   const cues = narrationCues(shotlist.segments, effDurs);
   const vttPath = path.join(paths.reel, `${eventId}-reel.vtt`);
   writeFileSync(vttPath, buildVtt(cues));
