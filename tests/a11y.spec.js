@@ -16,6 +16,10 @@ for (const pageName of ['index.html', 'voices.html', 'logbook.html']) {
     ));
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      // YouTube's own IFrame API player chrome (rendered inside the embed
+      // iframe) has its own aria markup we don't control and can't fix;
+      // Able Player supplies the accessible control layer around it.
+      .exclude('.able-media-container iframe')
       .analyze();
     expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
   });

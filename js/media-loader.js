@@ -39,7 +39,7 @@ export function renderPhotoCard(item) {
   return card;
 }
 
-function renderVideoCard(item) {
+export function renderVideoCard(item) {
   const card = document.createElement('article');
   card.className = 'media-card';
   const heading = document.createElement('p');
@@ -113,6 +113,13 @@ export async function renderVoices(container) {
     // media.json so Voices never renders empty.
     const fallback = await fetchItems('media.json').catch(() => null);
     if (fallback) voices = fallback.filter(i => i.person);
+  }
+  if (voices.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'voices-empty';
+    empty.textContent = 'Interview debriefs are coming soon — check back as more sailors share their stories.';
+    container.append(empty);
+    return;
   }
   for (const item of voices) {
     container.append(renderVideoCard(item));

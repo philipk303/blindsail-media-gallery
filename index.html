@@ -67,11 +67,9 @@
 
     <img class="wave-divider" src="svg/wave-divider.svg" alt="" aria-hidden="true">
 
-    <!-- When highlight reels ship (phase 3), this empty state is replaced by the
-         Able Player embed of the latest reel. -->
     <section class="latest-reel" aria-labelledby="reel-heading">
       <h2 id="reel-heading">The latest from the water</h2>
-      <div class="empty-state-card">
+      <div class="empty-state-card" id="latest-reel-slot">
         <img class="empty-state-art" src="svg/sailboat-hero.svg" alt="" aria-hidden="true">
         <p>
           Our first highlight reel will appear here after the next sail.
@@ -116,12 +114,33 @@
     </section>
 
     <script type="module">
-      import { loadMedia, renderPhotoCard } from './js/media-loader.js';
+      import { loadMedia, renderPhotoCard, renderVideoCard } from './js/media-loader.js';
+      import { mountAblePlayers } from './js/able-player-init.js';
       const items = await loadMedia();
       for (const item of items.filter(i => i.chapter && i.type === 'photo')) {
         const mount = document.getElementById(`chapter-media-${item.chapter}`);
         if (!mount) continue;
         mount.append(renderPhotoCard(item));
+      }
+      const reel = items.find(i => i.isReel);
+      if (reel) {
+        const slot = document.getElementById('latest-reel-slot');
+        const facade = document.createElement('button');
+        facade.type = 'button';
+        facade.className = 'reel-facade';
+        facade.setAttribute('aria-label', `Play highlight reel: ${reel.caption}`);
+        const poster = document.createElement('img');
+        poster.src = reel.poster;
+        poster.alt = '';
+        const playLabel = document.createElement('span');
+        playLabel.className = 'reel-facade-label';
+        playLabel.textContent = '▶ Play highlight reel';
+        facade.append(poster, playLabel);
+        facade.addEventListener('click', () => {
+          slot.replaceChildren(renderVideoCard(reel));
+          mountAblePlayers();
+        }, { once: true });
+        slot.replaceChildren(facade);
       }
     </script>
   </main>
@@ -136,7 +155,7 @@
       an accessible player with a caption toggle and an audio-description
       toggle in the control bar. The "Sounds of the bay" button in the header
       turns on an optional ambient soundscape; it is off by default and pauses
-      automatically whenever a video or audio description is playing. Every
+      automatically whenever an audio description is playing. Every
       part of this page can be reached and operated using only a keyboard.
     </p>
   </section>

@@ -28,13 +28,15 @@ export function createAdButton(adAudioSrc) {
   }
 
   const audio = new Audio(adAudioSrc);
+  audio.preload = 'none';
   const status = document.createElement('span');
   status.className = 'visually-hidden';
   status.setAttribute('aria-live', 'polite');
   const entry = { audio, status };
 
   function failCleanup() {
-    if (currentAd === entry) currentAd = null;
+    if (currentAd !== entry) return; // superseded by a later AD; not a real failure
+    currentAd = null;
     status.textContent = 'Audio description could not be played';
     restoreAmbient();
   }
