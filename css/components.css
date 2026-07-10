@@ -92,10 +92,11 @@
 }
 .empty-state-card p { margin: 0; flex: 1 1 20rem; }
 
-/* Reel facade: click-to-load poster so the YouTube player (and its ~4MB
-   SDK) only loads once a visitor asks to watch, keeping initial page
-   weight within the mobile budget. */
-.reel-facade {
+/* Video facade: click-to-load poster so the YouTube player (and its ~4MB
+   SDK) only loads once a visitor asks to watch a given video, keeping
+   initial page weight within the mobile budget regardless of how many
+   videos are on the page. */
+.video-facade {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -106,14 +107,14 @@
   padding: 0;
   cursor: pointer;
 }
-.reel-facade img {
+.video-facade img {
   display: block;
   width: 100%;
   max-width: 480px;
   height: auto;
   border-radius: 8px;
 }
-.reel-facade-label {
+.video-facade-label {
   font-weight: 700;
   color: var(--color-text-primary);
 }

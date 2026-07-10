@@ -115,7 +115,6 @@
 
     <script type="module">
       import { loadMedia, renderPhotoCard, renderVideoCard } from './js/media-loader.js';
-      import { mountAblePlayers } from './js/able-player-init.js';
       const items = await loadMedia();
       for (const item of items.filter(i => i.chapter && i.type === 'photo')) {
         const mount = document.getElementById(`chapter-media-${item.chapter}`);
@@ -125,22 +124,7 @@
       const reel = items.find(i => i.isReel);
       if (reel) {
         const slot = document.getElementById('latest-reel-slot');
-        const facade = document.createElement('button');
-        facade.type = 'button';
-        facade.className = 'reel-facade';
-        facade.setAttribute('aria-label', `Play highlight reel: ${reel.caption}`);
-        const poster = document.createElement('img');
-        poster.src = reel.poster;
-        poster.alt = '';
-        const playLabel = document.createElement('span');
-        playLabel.className = 'reel-facade-label';
-        playLabel.textContent = '▶ Play highlight reel';
-        facade.append(poster, playLabel);
-        facade.addEventListener('click', () => {
-          slot.replaceChildren(renderVideoCard(reel));
-          mountAblePlayers();
-        }, { once: true });
-        slot.replaceChildren(facade);
+        slot.replaceChildren(renderVideoCard(reel));
       }
     </script>
   </main>

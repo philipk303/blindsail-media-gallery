@@ -29,7 +29,7 @@ test('reduced motion sets the html class', async ({ page }) => {
 
 test('logbook renders photo cards with a playable AD button', async ({ page }) => {
   await page.goto('/logbook.html');
-  const photoCard = page.locator('.media-card', { has: page.locator('img') }).first();
+  const photoCard = page.locator('.media-card', { has: page.locator('.ad-button') }).first();
   const adButton = photoCard.locator('.ad-button');
   await expect(adButton).toBeEnabled();
   await expect(adButton).toHaveText('Play audio description');
