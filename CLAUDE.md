@@ -15,6 +15,6 @@ Never output code blocks, file contents, or large text in the chat window when r
 
 - `design.md` (project root) is the design source of truth. Do not re-litigate settled decisions.
 - Raw media (`BlindSail-JJ-1/`, `6-13 Sailing -pk/`, HEIC/MOV/MP4, `media/local/`, `media.local.json`) is gitignored — never commit or deploy real participant media before the screening pipeline exists.
-- GitHub: `philipk303/blindsail-media-gallery` (public), default branch `main`. Hosting: Cloudflare Pages.
+- GitHub: `philipk303/blindsail-media-gallery` (public), default branch `main`. Hosting: Cloudflare Worker with static assets (`wrangler.toml` at repo root, `[assets] directory = "."`) — NOT classic Cloudflare Pages, deployed via `npx wrangler deploy`. Live at https://blindsail-media-gallery.philipk303.workers.dev
 - Video hosting: philipk303's personal YouTube account, unlisted uploads. Pipeline credentials: philipk303@gmail.com via gws CLI.
 - Audience is blind/low-vision users — accessibility regressions are the highest-severity class of defect. WCAG 2.1 AA is the floor; axe + keyboard tests live in `tests/`.

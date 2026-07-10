@@ -16,7 +16,7 @@ always ships the synthetic `media.json` placeholders instead.
 
 ## Live preview
 
-<Cloudflare Pages URL — fill in after connecting the repo in the Cloudflare dashboard>
+https://blindsail-media-gallery.philipk303.workers.dev
 
 ## Publishing pipeline (phase 2)
 
@@ -30,4 +30,4 @@ Turns a sailing event's volunteer media into a published Logbook entry with a na
 
 **Takedown:** remove the item's object from `media.json`, `git push`. For a video, also set it Private on YouTube (studio.youtube.com).
 
-**Successor handover:** repo `philipk303/blindsail-media-gallery`; hosting Cloudflare Pages; video on philipk303's YouTube (unlisted); Google auth via gws (Drive) + the BlindSail GCP project (TTS/Speech/YouTube). Transfer GCP project ownership and grant repo access to hand off.
+**Successor handover:** repo `philipk303/blindsail-media-gallery`; hosting a Cloudflare Worker with static assets (`wrangler.toml`, deploy via `npx wrangler deploy` from a staged clean copy — the repo root has 1GB+ gitignored raw media); video on philipk303's YouTube (unlisted); Google auth via gws (Drive) + the BlindSail GCP project (TTS/Speech/YouTube). Transfer GCP project ownership and grant repo access to hand off.
