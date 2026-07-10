@@ -19,6 +19,7 @@ function writeStoredPreference(value) {
 
 const audio = new Audio('audio/ambient-waves.mp3');
 audio.loop = true;
+audio.preload = 'none';
 let userWantsAmbient = readStoredPreference();
 let duckedForMedia = false;
 let retryOnGestureArmed = false;
