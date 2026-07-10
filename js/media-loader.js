@@ -1,4 +1,5 @@
 import { createAdButton } from './ad-button.js';
+import { mountAblePlayers } from './able-player-init.js';
 
 async function fetchItems(url) {
   const response = await fetch(url);
@@ -39,30 +40,57 @@ export function renderPhotoCard(item) {
   return card;
 }
 
-function renderVideoCard(item) {
+// Renders a video card with a click-to-load facade: the YouTube/local
+// player (and, for YouTube, its ~4MB SDK) only initializes once the
+// visitor asks to watch, keeping initial page weight down regardless of
+// how many videos are on the page.
+export function renderVideoCard(item) {
   const card = document.createElement('article');
   card.className = 'media-card';
   const heading = document.createElement('p');
   heading.textContent = item.caption;
-  const player = document.createElement('div');
-  player.className = 'able-player-mount';
-  if (item.youtubeId || item.localSrc) {
-    player.dataset.youtubeId = item.youtubeId ?? '';
-    player.dataset.localSrc = item.localSrc ?? '';
-    player.dataset.poster = item.poster ?? '';
-    player.dataset.vtt = item.vtt ?? '';
-    player.dataset.adTrack = item.adTrack ?? '';
-  } else {
-    const placeholder = document.createElement('p');
-    placeholder.className = 'video-placeholder';
-    placeholder.textContent = 'Video coming soon.';
-    player.append(placeholder);
-  }
+  const playerSlot = document.createElement('div');
+  playerSlot.className = 'video-player-slot';
   const transcript = document.createElement('details');
   const summary = document.createElement('summary');
   summary.textContent = 'Transcript';
   transcript.append(summary, document.createTextNode(item.transcript ?? 'Transcript not yet available.'));
-  card.append(heading, player, transcript);
+  card.append(heading, playerSlot, transcript);
+
+  if (!item.youtubeId && !item.localSrc) {
+    const placeholder = document.createElement('p');
+    placeholder.className = 'video-placeholder';
+    placeholder.textContent = 'Video coming soon.';
+    playerSlot.append(placeholder);
+    return card;
+  }
+
+  const facade = document.createElement('button');
+  facade.type = 'button';
+  facade.className = 'video-facade';
+  facade.setAttribute('aria-label', `Play video: ${item.caption}`);
+  if (item.poster) {
+    const poster = document.createElement('img');
+    poster.src = item.poster;
+    poster.alt = '';
+    facade.append(poster);
+  }
+  const playLabel = document.createElement('span');
+  playLabel.className = 'video-facade-label';
+  playLabel.textContent = '▶ Play video';
+  facade.append(playLabel);
+  facade.addEventListener('click', () => {
+    const mount = document.createElement('div');
+    mount.className = 'able-player-mount';
+    mount.dataset.youtubeId = item.youtubeId ?? '';
+    mount.dataset.localSrc = item.localSrc ?? '';
+    mount.dataset.poster = item.poster ?? '';
+    mount.dataset.vtt = item.vtt ?? '';
+    mount.dataset.adTrack = item.adTrack ?? '';
+    playerSlot.replaceChildren(mount);
+    mountAblePlayers(card);
+  }, { once: true });
+  playerSlot.append(facade);
   return card;
 }
 
@@ -91,7 +119,9 @@ export async function renderLogbook(container) {
     if (!byEvent.has(key)) byEvent.set(key, []);
     byEvent.get(key).push(item);
   }
-  for (const [event, eventItems] of [...byEvent.entries()].sort().reverse()) {
+  const newestDate = eventItems => eventItems.reduce((max, i) => (i.date > max ? i.date : max), '');
+  const groups = [...byEvent.entries()].sort((a, b) => newestDate(b[1]).localeCompare(newestDate(a[1])));
+  for (const [event, eventItems] of groups) {
     const section = document.createElement('section');
     const heading = document.createElement('h2');
     heading.textContent = formatEventHeading(event, eventItems);
@@ -111,6 +141,13 @@ export async function renderVoices(container) {
     // media.json so Voices never renders empty.
     const fallback = await fetchItems('media.json').catch(() => null);
     if (fallback) voices = fallback.filter(i => i.person);
+  }
+  if (voices.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'voices-empty';
+    empty.textContent = 'Interview debriefs are coming soon — check back as more sailors share their stories.';
+    container.append(empty);
+    return;
   }
   for (const item of voices) {
     container.append(renderVideoCard(item));

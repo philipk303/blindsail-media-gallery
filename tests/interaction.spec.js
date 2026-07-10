@@ -27,15 +27,16 @@ test('reduced motion sets the html class', async ({ page }) => {
   await expect(page.locator('html')).toHaveClass(/reduced-motion/);
 });
 
-test('logbook renders photo cards with disabled AD buttons from sample data', async ({ page }) => {
+test('logbook renders photo cards with a playable AD button', async ({ page }) => {
   await page.goto('/logbook.html');
-  const adButton = page.locator('.ad-button').first();
-  await expect(adButton).toBeDisabled();
-  await expect(adButton).toHaveText('Audio description not yet available');
+  const photoCard = page.locator('.media-card', { has: page.locator('.ad-button') }).first();
+  const adButton = photoCard.locator('.ad-button');
+  await expect(adButton).toBeEnabled();
+  await expect(adButton).toHaveText('Play audio description');
 });
 
-test('voices renders interview cards with transcripts', async ({ page }) => {
+test('voices shows an empty-state message when no interviews are published', async ({ page }) => {
   await page.goto('/voices.html');
-  await expect(page.locator('.media-card')).toHaveCount(2);
-  await expect(page.locator('details summary').first()).toHaveText('Transcript');
+  await expect(page.locator('.media-card')).toHaveCount(0);
+  await expect(page.locator('.voices-empty')).toBeVisible();
 });

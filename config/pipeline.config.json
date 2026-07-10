@@ -1,0 +1,26 @@
+{
+  "driveFolderId": "1AqvSZuhjnEkJaZobS2X4Jk4yA8ITbyFZ",
+  "gcpProjectId": "blindsail-media-gallery-gcp",
+  "gwsAccount": "philipk303@gmail.com",
+  "gwsJs": "C:\\Users\\phili\\AppData\\Roaming\\npm\\node_modules\\@googleworkspace\\cli\\run.js",
+  "tts": {
+    "languageCode": "en-US",
+    "voiceName": "en-US-Neural2-C",
+    "audioEncoding": "MP3"
+  },
+  "asr": {
+    "languageCode": "en-US",
+    "model": "latest_long"
+  },
+  "youtube": {
+    "privacyStatus": "unlisted",
+    "categoryId": "29"
+  },
+  "reel": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "photoSeconds": 4,
+    "crossfadeSeconds": 0.5
+  }
+}

@@ -43,9 +43,7 @@
     <div id="voices-cards"></div>
     <script type="module">
       import { renderVoices } from './js/media-loader.js';
-      import { mountAblePlayers } from './js/able-player-init.js';
       await renderVoices(document.getElementById('voices-cards'));
-      mountAblePlayers();
     </script>
   </main>
 
@@ -59,7 +57,7 @@
       an accessible player with a caption toggle and an audio-description
       toggle in the control bar. The "Sounds of the bay" button in the header
       turns on an optional ambient soundscape; it is off by default and pauses
-      automatically whenever a video or audio description is playing. Every
+      automatically whenever an audio description is playing. Every
       part of this page can be reached and operated using only a keyboard.
     </p>
   </section>
