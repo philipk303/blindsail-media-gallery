@@ -1,0 +1,20 @@
+{
+  "name": "blindsail-reel",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.488",
+    "@remotion/cli": "4.0.488",
+    "@remotion/fonts": "4.0.488",
+    "@remotion/renderer": "4.0.488",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.488"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "typescript": "5.9.3"
+  }
+}
