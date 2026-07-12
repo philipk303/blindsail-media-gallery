@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Easing, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { theme } from '../theme';
 
 const CardShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -16,9 +16,9 @@ const CardShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const RiseIn: React.FC<{ children: React.ReactNode; delayFrames?: number }> = ({ children, delayFrames = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const d = Math.round(0.6 * fps);
+  const d = Math.round(0.9 * fps);
   const p = interpolate(frame - delayFrames, [0, d], [0, 1],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
+    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) });
   return <div style={{ opacity: p, transform: `translateY(${(1 - p) * 24}px)`, textAlign: 'center' }}>{children}</div>;
 };
 

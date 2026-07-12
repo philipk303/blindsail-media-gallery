@@ -20,8 +20,8 @@ export const PhotoSegment: React.FC<Props> = ({ src, totalFrames, motion, anchor
   if (motion === 'zoom-in') scale = 1 + zoomSpan * t;
   else if (motion === 'zoom-out') scale = maxScale - zoomSpan * t;
   else {
-    scale = 1 + zoomSpan / 2;                 // pans need headroom to avoid edges
-    const panPct = 1.6;                        // total horizontal travel, % of width
+    scale = maxScale;                          // pans need full headroom to avoid edges
+    const panPct = 4.5;                        // total horizontal travel, % of width
     tx = (motion === 'pan-left' ? 1 : -1) * (panPct / 2 - panPct * t);
   }
   const origin = anchor ? `${anchor.x * 100}% ${anchor.y * 100}%` : '50% 50%';

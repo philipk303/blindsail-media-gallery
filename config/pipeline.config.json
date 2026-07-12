@@ -22,9 +22,9 @@
     "fps": 30,
     "photoSeconds": 4,
     "crossfadeSeconds": 0.5,
-    "dissolveSeconds": 0.75,
-    "dipSeconds": 0.4,
-    "wipeSeconds": 0.9,
+    "dissolveSeconds": 1.0,
+    "dipSeconds": 0.5,
+    "wipeSeconds": 1.4,
     "titleSeconds": 4,
     "endSeconds": 5.5,
     "maxKenBurnsScale": 1.07

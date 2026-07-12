@@ -25,6 +25,7 @@ scripts/pipeline/node_modules/
 # Remotion reel renderer
 remotion/node_modules/
 remotion/public/run/
+.remotion/
 
 # Claude Code worktrees (local only) — keep skills/ committable
 .claude/worktrees/
