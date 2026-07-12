@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs, ambientVideoArgs, ambientSilenceArgs, mixAudioArgs } from '../reel.mjs';
+import { validateShotlist, expandShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs, ambientVideoArgs, ambientSilenceArgs, mixAudioArgs } from '../reel.mjs';
 
 const cfg = { width: 1280, height: 720, fps: 30, photoSeconds: 4, crossfadeSeconds: 0.5 };
 
@@ -80,6 +80,30 @@ test('validateShotlist requires title text on titleCard and url on endCard', () 
   assert.ok(validateShotlist({ ...base,
     titleCard: { title: 'First Sail', date: 'June 13, 2026', narration: 'n' },
     endCard: { line: 'Come sail with us.', url: 'blindsail.org', narration: 'n' } }));
+});
+
+test('expandShotlist turns cards into first/last segments with card kind', () => {
+  const sl = { title: 't',
+    titleCard: { title: 'First Sail', date: 'June 13, 2026', narration: 'First Sail.' },
+    endCard: { line: 'Come sail.', url: 'blindsail.org', narration: 'blindsail dot org.' },
+    segments: [{ id: 'a', kind: 'photo', seconds: 4, narration: 'A.' }] };
+  const segs = expandShotlist(sl, { titleSeconds: 4, endSeconds: 5.5 });
+  assert.equal(segs.length, 3);
+  assert.deepEqual([segs[0].kind, segs[2].kind], ['card', 'card']);
+  assert.equal(segs[0].card.variant, 'title');
+  assert.equal(segs[0].seconds, 4);
+  assert.equal(segs[2].card.variant, 'end');
+  assert.equal(segs[2].seconds, 5.5);
+  assert.equal(segs[2].narration, 'blindsail dot org.');
+});
+
+test('expandShotlist without cards returns segments unchanged', () => {
+  const sl = { title: 't', segments: [{ id: 'a', kind: 'photo', seconds: 4 }] };
+  assert.deepEqual(expandShotlist(sl, { titleSeconds: 4, endSeconds: 5.5 }), sl.segments);
+});
+
+test('segmentDuration handles card segments via seconds', () => {
+  assert.equal(segmentDuration({ kind: 'card', seconds: 5.5 }), 5.5);
 });
 
 test('mixAudioArgs stream-copies video and ducks the ambient bed under the narration', () => {

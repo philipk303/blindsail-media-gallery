@@ -34,8 +34,25 @@ export function validateShotlist(shotlist) {
   return shotlist;
 }
 
+// Cards become ordinary segments so narration timing, the ambient bed, the VTT,
+// and the fallback renderer need zero special cases.
+export function expandShotlist(shotlist, reelCfg) {
+  const segs = [...shotlist.segments];
+  if (shotlist.titleCard) {
+    segs.unshift({ id: '__title__', kind: 'card', seconds: reelCfg.titleSeconds,
+      narration: shotlist.titleCard.narration ?? null,
+      card: { variant: 'title', title: shotlist.titleCard.title, date: shotlist.titleCard.date ?? null } });
+  }
+  if (shotlist.endCard) {
+    segs.push({ id: '__end__', kind: 'card', seconds: reelCfg.endSeconds,
+      narration: shotlist.endCard.narration ?? null,
+      card: { variant: 'end', line: shotlist.endCard.line ?? null, url: shotlist.endCard.url } });
+  }
+  return segs;
+}
+
 export function segmentDuration(seg) {
-  return seg.kind === 'photo' ? seg.seconds : (seg.out - seg.in);
+  return seg.kind === 'video' ? (seg.out - seg.in) : seg.seconds;
 }
 
 // Effective duration per segment: never truncate narration (cut-off audio
