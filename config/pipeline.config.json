@@ -17,10 +17,16 @@
     "categoryId": "29"
   },
   "reel": {
-    "width": 1280,
-    "height": 720,
+    "width": 1920,
+    "height": 1080,
     "fps": 30,
     "photoSeconds": 4,
-    "crossfadeSeconds": 0.5
+    "crossfadeSeconds": 0.5,
+    "dissolveSeconds": 0.75,
+    "dipSeconds": 0.4,
+    "wipeSeconds": 0.9,
+    "titleSeconds": 4,
+    "endSeconds": 5.5,
+    "maxKenBurnsScale": 1.07
   }
 }
