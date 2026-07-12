@@ -62,6 +62,26 @@ test('ambientSilenceArgs emits exact-length 24kHz-mono silence for a photo slot'
   assert.equal(args[args.indexOf('-t') + 1], '4');
 });
 
+test('validateShotlist rejects a bad motion variant and accepts good ones', () => {
+  const seg = { id: 'a', kind: 'photo', seconds: 4 };
+  assert.throws(() => validateShotlist({ title: 't', segments: [{ ...seg, motion: 'spin' }] }), /motion/i);
+  assert.ok(validateShotlist({ title: 't', segments: [{ ...seg, motion: 'pan-left' }] }));
+});
+
+test('validateShotlist rejects out-of-range anchor', () => {
+  const seg = { id: 'a', kind: 'photo', seconds: 4, anchor: { x: 1.5, y: 0.5 } };
+  assert.throws(() => validateShotlist({ title: 't', segments: [seg] }), /anchor/i);
+});
+
+test('validateShotlist requires title text on titleCard and url on endCard', () => {
+  const base = { title: 't', segments: [{ id: 'a', kind: 'photo', seconds: 4 }] };
+  assert.throws(() => validateShotlist({ ...base, titleCard: { date: 'June 13' } }), /titleCard/i);
+  assert.throws(() => validateShotlist({ ...base, endCard: { line: 'x' } }), /endCard/i);
+  assert.ok(validateShotlist({ ...base,
+    titleCard: { title: 'First Sail', date: 'June 13, 2026', narration: 'n' },
+    endCard: { line: 'Come sail with us.', url: 'blindsail.org', narration: 'n' } }));
+});
+
 test('mixAudioArgs stream-copies video and ducks the ambient bed under the narration', () => {
   const args = mixAudioArgs('silent.mp4', 'ambient.mp3', 'narration.mp3', 'reel.mp4');
   const filter = args[args.indexOf('-filter_complex') + 1];

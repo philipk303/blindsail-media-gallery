@@ -7,11 +7,30 @@ import { run, ffprobeDuration } from './lib/ffmpeg.mjs';
 import { buildVtt } from './lib/vtt.mjs';
 import { renderNarrationLine } from './tts.mjs';
 
+const MOTIONS = ['zoom-in', 'zoom-out', 'pan-left', 'pan-right'];
+
 export function validateShotlist(shotlist) {
   if (!shotlist || !Array.isArray(shotlist.segments) || shotlist.segments.length === 0) {
     throw new Error('reel: shotlist has no segments');
   }
   if (!shotlist.title) throw new Error('reel: shotlist has no title');
+  for (const seg of shotlist.segments) {
+    if (seg.motion !== undefined && !MOTIONS.includes(seg.motion)) {
+      throw new Error(`reel: unknown motion "${seg.motion}" (allowed: ${MOTIONS.join(', ')})`);
+    }
+    if (seg.anchor !== undefined) {
+      const { x, y } = seg.anchor;
+      if (!(x >= 0 && x <= 1 && y >= 0 && y <= 1)) {
+        throw new Error(`reel: anchor out of range for ${seg.id} (0..1 relative coords)`);
+      }
+    }
+  }
+  if (shotlist.titleCard && !shotlist.titleCard.title) {
+    throw new Error('reel: titleCard requires a title');
+  }
+  if (shotlist.endCard && !shotlist.endCard.url) {
+    throw new Error('reel: endCard requires a url');
+  }
   return shotlist;
 }
 
