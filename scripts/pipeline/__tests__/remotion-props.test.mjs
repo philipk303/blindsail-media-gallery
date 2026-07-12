@@ -32,7 +32,7 @@ test('tails equal the NEXT segment transition frames; last has none', () => {
   assert.equal(p.segments[0].tailFrames, p.segments[1].transitionInFrames);
   assert.equal(p.segments[1].tailFrames, 0);
   assert.equal(p.segments[0].transitionIn, 'none'); // first segment: no transition
-  assert.equal(p.segments[1].transitionIn, 'dissolve');
+  assert.equal(p.segments[1].transitionIn, 'wind');
   assert.equal(p.segments[1].transitionInFrames, Math.round(0.75 * 30));
 });
 

@@ -7,7 +7,9 @@ function transitionFor(prev, seg, cfg) {
   if (!prev) return { kind: 'none', seconds: 0 };
   if (prev.kind === 'card' || seg.kind === 'card') return { kind: 'wipe', seconds: cfg.wipeSeconds };
   if (prev.kind === 'video' && seg.kind === 'video') return { kind: 'dip', seconds: cfg.dipSeconds };
-  return { kind: 'dissolve', seconds: cfg.dissolveSeconds };
+  // Default: the outgoing shot is "blown off" by the breeze, revealing the
+  // incoming shot beneath (see TransitionOut in Reel.tsx).
+  return { kind: 'wind', seconds: cfg.dissolveSeconds };
 }
 
 export function buildRemotionProps(segments, effDurs, cfg, srcOf) {

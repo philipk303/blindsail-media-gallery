@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Easing, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { Grade } from './components/Grade';
 import { PhotoSegment } from './components/PhotoSegment';
 import { VideoSegment } from './components/VideoSegment';
@@ -18,7 +18,7 @@ export type Seg = {
   motion: 'zoom-in' | 'zoom-out' | 'pan-left' | 'pan-right';
   anchor: { x: number; y: number } | null;
   lowerThird: string | null; subThird: string | null;
-  transitionIn: 'none' | 'dissolve' | 'dip' | 'wipe';
+  transitionIn: 'none' | 'dissolve' | 'dip' | 'wipe' | 'wind';
   transitionInFrames: number;
 };
 export type ReelProps = {
@@ -48,7 +48,11 @@ const SegmentVisual: React.FC<{ seg: Seg; maxScale: number }> = ({ seg, maxScale
 const TransitionIn: React.FC<{ seg: Seg; children: React.ReactNode }> = ({ seg, children }) => {
   const frame = useCurrentFrame();
   const n = seg.transitionInFrames;
-  if (seg.transitionIn === 'none' || n === 0) return <>{children}</>;
+  if (seg.transitionIn === 'none' || seg.transitionIn === 'wind' || n === 0) {
+    // wind: the incoming shot just sits there, fully visible — the OUTGOING
+    // segment does all the work (TransitionOut blows it off the screen above).
+    return <>{children}</>;
+  }
   if (seg.transitionIn === 'wipe') {
     return <WaterWipe transitionFrames={n}>{children}</WaterWipe>;
   }
@@ -67,17 +71,43 @@ const TransitionIn: React.FC<{ seg: Seg; children: React.ReactNode }> = ({ seg, 
   return <div style={{ opacity, width: '100%', height: '100%' }}>{children}</div>;
 };
 
+// Outgoing wind animation: during this segment's tail (while the next segment
+// is already visible underneath), the whole shot is "caught by a gust" —
+// accelerating off to the right with a slight loft, tilt, and motion blur.
+// zIndex 1 flips it ABOVE the (DOM-later) incoming segment for the overlap.
+const TransitionOut: React.FC<{
+  nextTransition: Seg['transitionIn'] | null; durFrames: number; tailFrames: number;
+  children: React.ReactNode;
+}> = ({ nextTransition, durFrames, tailFrames, children }) => {
+  const frame = useCurrentFrame();
+  if (nextTransition !== 'wind' || tailFrames === 0) return <>{children}</>;
+  const p = interpolate(frame, [durFrames, durFrames + tailFrames], [0, 1], {
+    extrapolateLeft: 'clamp', extrapolateRight: 'clamp',
+    easing: Easing.in(Easing.quad), // gust builds — slow catch, fast exit
+  });
+  return (
+    <div style={{
+      width: '100%', height: '100%', position: 'relative', zIndex: 1,
+      transform: `translateX(${(p * 108).toFixed(2)}%) translateY(${(-p * 6).toFixed(2)}%) rotate(${(p * 2).toFixed(2)}deg)`,
+      filter: p > 0 ? `blur(${(p * 6).toFixed(1)}px)` : undefined,
+    }}>{children}</div>
+  );
+};
+
 export const Reel: React.FC<ReelProps> = ({ segments, maxKenBurnsScale }) => (
   <AbsoluteFill style={{ backgroundColor: theme.offWhite }}>
     <Grade>
       {segments.map((seg, i) => (
         <Sequence key={i} from={seg.startFrame} durationInFrames={seg.durFrames + seg.tailFrames}>
-          <TransitionIn seg={seg}>
-            <SegmentVisual seg={seg} maxScale={maxKenBurnsScale} />
-          </TransitionIn>
-          {seg.lowerThird && (
-            <LowerThird name={seg.lowerThird} subThird={seg.subThird} segFrames={seg.durFrames} />
-          )}
+          <TransitionOut nextTransition={segments[i + 1]?.transitionIn ?? null}
+            durFrames={seg.durFrames} tailFrames={seg.tailFrames}>
+            <TransitionIn seg={seg}>
+              <SegmentVisual seg={seg} maxScale={maxKenBurnsScale} />
+            </TransitionIn>
+            {seg.lowerThird && (
+              <LowerThird name={seg.lowerThird} subThird={seg.subThird} segFrames={seg.durFrames} />
+            )}
+          </TransitionOut>
         </Sequence>
       ))}
     </Grade>
