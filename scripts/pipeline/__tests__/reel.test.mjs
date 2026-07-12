@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateShotlist, expandShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs, ambientVideoArgs, ambientSilenceArgs, mixAudioArgs } from '../reel.mjs';
+import { validateShotlist, expandShotlist, segmentDuration, effectiveDurations, narrationCues, photoSegmentArgs, videoSegmentArgs, ambientVideoArgs, ambientSilenceArgs, mixAudioArgs, cardFallbackArgs } from '../reel.mjs';
 
 const cfg = { width: 1280, height: 720, fps: 30, photoSeconds: 4, crossfadeSeconds: 0.5 };
 
@@ -104,6 +104,16 @@ test('expandShotlist without cards returns segments unchanged', () => {
 
 test('segmentDuration handles card segments via seconds', () => {
   assert.equal(segmentDuration({ kind: 'card', seconds: 5.5 }), 5.5);
+});
+
+test('cardFallbackArgs renders an exact-length pale-blue clip at size/fps', () => {
+  const args = cardFallbackArgs('card.mp4', 4, cfg);
+  const src = args[args.indexOf('-i') + 1];
+  assert.ok(src.includes('c=0xE3F2FB'));
+  assert.ok(src.includes(`s=${cfg.width}x${cfg.height}`));
+  assert.ok(src.includes(`r=${cfg.fps}`));
+  assert.equal(args[args.indexOf('-t') + 1], '4');
+  assert.equal(args[args.length - 1], 'card.mp4');
 });
 
 test('mixAudioArgs stream-copies video and ducks the ambient bed under the narration', () => {

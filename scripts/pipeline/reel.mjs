@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { runPaths, eventIdFromDate, loadConfig } from './lib/config.mjs';
-import { loadManifest } from './lib/manifest.mjs';
+import { loadManifest, saveManifest } from './lib/manifest.mjs';
 import { run, ffprobeDuration } from './lib/ffmpeg.mjs';
 import { buildVtt } from './lib/vtt.mjs';
 import { renderNarrationLine } from './tts.mjs';
@@ -125,6 +125,16 @@ export function ambientSilenceArgs(out, effDur) {
     '-t', String(effDur), '-b:a', '48k', out];
 }
 
+// Fallback renderer can't draw cards (no Remotion, and ffmpeg drawtext font
+// resolution on Windows is fragile) — a plain brand-color clip keeps the A/V
+// timeline aligned; the narration still reads the card's text aloud.
+export function cardFallbackArgs(out, seconds, cfg) {
+  return ['-y', '-f', 'lavfi',
+    '-i', `color=c=0xE3F2FB:s=${cfg.width}x${cfg.height}:r=${cfg.fps}`,
+    '-t', String(seconds),
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-an', out];
+}
+
 // Final mux: bed the clip ambient low (0.35), duck it further under the
 // narration via sidechain compression keyed by the narration, then sum
 // (normalize=0 keeps narration at full level) and limit to avoid clipping.
@@ -139,6 +149,29 @@ export function mixAudioArgs(silentReel, ambientTrack, narrTrack, out) {
     '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-movflags', '+faststart', out];
 }
 
+// Fallback visual assembly — the pre-Remotion ffmpeg path, kept verbatim so a
+// broken Remotion install can never block publishing. Cards render as plain
+// brand-color clips (narration still reads their text).
+function assembleWithFfmpeg(segments, effDurs, byId, paths, reelCfg, silentReel) {
+  const segFiles = [];
+  segments.forEach((seg, idx) => {
+    const segOut = path.join(paths.reel, `seg-${String(idx).padStart(3, '0')}.mp4`);
+    if (seg.kind === 'card') {
+      run(cardFallbackArgs(segOut, effDurs[idx], reelCfg));
+    } else {
+      const item = byId.get(seg.id);
+      if (!item) throw new Error(`reel: shotlist references unknown item ${seg.id}`);
+      const src = path.join(paths.root, item.rendition);
+      if (seg.kind === 'photo') run(photoSegmentArgs(src, segOut, effDurs[idx], reelCfg));
+      else run(videoSegmentArgs(src, segOut, seg.in, seg.out, effDurs[idx], reelCfg));
+    }
+    segFiles.push(segOut);
+  });
+  const listFile = path.join(paths.reel, 'segments.txt');
+  writeFileSync(listFile, segFiles.map(f => `file '${f.replace(/'/g, "'\\''")}'`).join('\n'));
+  run(['-y', '-f', 'concat', '-safe', '0', '-i', listFile, '-c', 'copy', silentReel]);
+}
+
 // Adapter entry point.
 export async function main(isoDate) {
   const cfg = loadConfig();
@@ -148,48 +181,49 @@ export async function main(isoDate) {
   mkdirSync(paths.reel, { recursive: true });
   const manifest = loadManifest(paths.manifest);
   const shotlist = validateShotlist(JSON.parse(readFileSync(paths.shotlist, 'utf8')));
+  const segments = expandShotlist(shotlist, reelCfg);
   const byId = new Map(manifest.items.map(i => [i.id, i]));
 
   // 1) Narration FIRST: render each line, measure its real duration so the
   //    visuals can be sized to fit it.
   const narrFiles = [];
   const narrDurs = [];
-  for (let idx = 0; idx < shotlist.segments.length; idx++) {
-    const seg = shotlist.segments[idx];
+  for (let idx = 0; idx < segments.length; idx++) {
+    const seg = segments[idx];
     if (!seg.narration) { narrFiles.push(null); narrDurs.push(0); continue; }
     const nOut = path.join(paths.reel, `narr-${String(idx).padStart(3, '0')}.mp3`);
     await renderNarrationLine(seg.narration, nOut);
     narrFiles.push(nOut);
     narrDurs.push(ffprobeDuration(nOut));
   }
-  const effDurs = effectiveDurations(shotlist.segments, narrDurs);
+  const effDurs = effectiveDurations(segments, narrDurs);
 
-  // 2) Visual segments at their effective durations — all normalized to
-  //    identical codec/size/fps/SAR so the concat demuxer can stream-copy.
-  const segFiles = [];
-  shotlist.segments.forEach((seg, idx) => {
-    const item = byId.get(seg.id);
-    if (!item) throw new Error(`reel: shotlist references unknown item ${seg.id}`);
-    const src = path.join(paths.root, item.rendition);
-    const segOut = path.join(paths.reel, `seg-${String(idx).padStart(3, '0')}.mp4`);
-    if (seg.kind === 'photo') run(photoSegmentArgs(src, segOut, effDurs[idx], reelCfg));
-    else run(videoSegmentArgs(src, segOut, seg.in, seg.out, effDurs[idx], reelCfg));
-    segFiles.push(segOut);
-  });
-
-  // 3) Concat visuals (identically-encoded segments; Task 18 ffprobe-verifies
-  //    the join on the first live run).
-  const listFile = path.join(paths.reel, 'segments.txt');
-  writeFileSync(listFile, segFiles.map(f => `file '${f.replace(/'/g, "'\\''")}'`).join('\n'));
+  // 2-3) Silent visual reel: Remotion (production) or ffmpeg (fallback).
   const silentReel = path.join(paths.reel, 'reel-silent.mp4');
-  run(['-y', '-f', 'concat', '-safe', '0', '-i', listFile, '-c', 'copy', silentReel]);
+  let renderer = 'remotion';
+  if (process.env.BLINDSAIL_REEL_RENDERER === 'ffmpeg') {
+    renderer = 'ffmpeg-forced';
+    assembleWithFfmpeg(segments, effDurs, byId, paths, reelCfg, silentReel);
+  } else {
+    try {
+      const { stageAssets, renderSilentReel } = await import('./remotion-render.mjs');
+      const { buildRemotionProps } = await import('./remotion-props.mjs');
+      const srcOf = stageAssets(eventId, segments, byId, paths);
+      const props = buildRemotionProps(segments, effDurs, reelCfg, srcOf);
+      await renderSilentReel(eventId, props, silentReel);
+    } catch (err) {
+      console.error(`remotion render failed, falling back to ffmpeg: ${err.message}`);
+      renderer = 'ffmpeg-fallback';
+      assembleWithFfmpeg(segments, effDurs, byId, paths, reelCfg, silentReel);
+    }
+  }
 
   // 4) Narration track: pad every slot to its effective duration in ONE
   //    uniform format (24kHz mono — Neural2's MP3 output rate) so the concat
   //    can't splice mismatched sample rates/channels, then concat with
   //    re-encode. No truncation: effDur >= narration duration by construction.
   const padded = [];
-  shotlist.segments.forEach((seg, idx) => {
+  segments.forEach((seg, idx) => {
     const dur = effDurs[idx];
     const padOut = path.join(paths.reel, `narrpad-${String(idx).padStart(3, '0')}.mp3`);
     if (narrFiles[idx]) {
@@ -211,7 +245,7 @@ export async function main(isoDate) {
   //    voices); photos contribute silence. Same effDurs, same 24kHz-mono format
   //    as the narration, concatenated to one full-length track.
   const ambFiles = [];
-  shotlist.segments.forEach((seg, idx) => {
+  segments.forEach((seg, idx) => {
     const ambOut = path.join(paths.reel, `amb-${String(idx).padStart(3, '0')}.mp3`);
     if (seg.kind === 'video') {
       const item = byId.get(seg.id);
@@ -234,12 +268,18 @@ export async function main(isoDate) {
   run(mixAudioArgs(silentReel, ambientTrack, narrTrack, finalReel));
 
   // 7) Captions VTT from narration cues at the effective timings.
-  const cues = narrationCues(shotlist.segments, effDurs);
+  const cues = narrationCues(segments, effDurs);
   const vttPath = path.join(paths.reel, `${eventId}-reel.vtt`);
   writeFileSync(vttPath, buildVtt(cues));
 
+  // Record which renderer produced the visuals — 'ffmpeg-fallback' means
+  // publish proceeds but the owner should be told (design.md Error Handling).
+  manifest.reel = { ...(manifest.reel ?? {}), renderer };
+  saveManifest(paths.manifest, manifest);
+
   console.log(`Reel assembled: ${finalReel}`);
   console.log(`Reel captions:  ${vttPath}`);
+  console.log(`Reel renderer:  ${renderer}`);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
