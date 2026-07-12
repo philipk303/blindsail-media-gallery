@@ -42,10 +42,10 @@ Set state to `captioned`. Save.
 ## Stage 6 — Caption spoken video (ASR)
 `node scripts/pipeline/asr.mjs 2026-06-13` — transcribes `hasSpeech` videos to a caption VTT + transcript.
 
-## Stage 7 — Highlight reel (Claude drafts, ffmpeg assembles)
-Review the event's `narrated` items (posters, captions, transcripts). Write `pipeline/runs/<event>/shotlist.json` per the schema in `scripts/pipeline/reel.mjs` (clip order, per-photo `seconds`, per-video `in`/`out`, one `narration` line per segment, a `title`). Keep it 60–120s. Then:
+## Stage 7 — Highlight reel (Claude drafts, Remotion renders, ffmpeg muxes)
+Review the event's `narrated` items (posters, captions, transcripts). Write `pipeline/runs/<event>/shotlist.json` per the schema in `scripts/pipeline/reel.mjs` (clip order, per-photo `seconds`, per-video `in`/`out`, one `narration` line per segment, a `title`). Keep it 60–120s. Optional production-value fields: per-photo `motion` (`zoom-in|zoom-out|pan-left|pan-right`) + `anchor {x,y}` (keeps faces in frame), per-segment `lowerThird` ("Name — Role") / `subThird` ("San Francisco Bay · June 13"), top-level `titleCard {title,date,narration}` and `endCard {line,url,narration}` (narration should read the url aloud). Then:
 `node scripts/pipeline/reel.mjs 2026-06-13`
-Set `manifest.reel = { title, narrationText }` (full narration joined) before upload. If assembly fails, publish the burst without a reel and flag it (design.md Error Handling).
+Visuals render via Remotion (cards, crossfades, lower-thirds); on failure it falls back to plain ffmpeg assembly automatically — check the `Reel renderer:` output line / `manifest.reel.renderer`: `ffmpeg-fallback` means publish proceeds but flag it to the owner. First run on a machine: `cd remotion && npm install`. Set `manifest.reel = { title, narrationText }` (full narration joined) before upload. If assembly fails entirely, publish the burst without a reel and flag it (design.md Error Handling).
 
 ## Stage 8 — Upload (YouTube, unlisted)
 `node scripts/pipeline/youtube-upload.mjs 2026-06-13` — uploads the reel first, then videos; records `youtubeId`s. Resumable (saves after each upload; quota errors leave items queued, not failed). Quota: `videos.insert` costs 1600 of the 10,000/day default (~6 uploads/day) — a big event may need a second day's run to finish.
