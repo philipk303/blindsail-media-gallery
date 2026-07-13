@@ -44,10 +44,21 @@ export async function renderSilentReel(eventId, props, outPath) {
 
   const serveUrl = await bundle({ entryPoint: path.join(REMOTION_DIR, 'src', 'index.ts') });
   const composition = await selectComposition({ serveUrl, id: 'Reel', inputProps: props });
+  // Cap parallelism and the offthread-video frame cache: the default
+  // concurrency (= CPU count) spawns enough Chrome compositors to OOM-kill
+  // them (SIGKILL) on machines with modest RAM. Both are env-overridable.
+  const concurrency = Number(process.env.BLINDSAIL_REEL_CONCURRENCY) || 1;
+  const offthreadVideoCacheSizeInBytes =
+    Number(process.env.BLINDSAIL_REEL_VIDEO_CACHE_BYTES) || 256 * 1024 * 1024;
   await renderMedia({
     composition, serveUrl, codec: 'h264', muted: true,
     outputLocation: outPath, inputProps: props,
     pixelFormat: 'yuv420p',
+    concurrency,
+    offthreadVideoCacheSizeInBytes,
+    // Cold renders load two local fonts before the first frame; the default
+    // 28s delayRender timeout can trip on slower machines. Env-overridable.
+    timeoutInMilliseconds: Number(process.env.BLINDSAIL_REEL_TIMEOUT_MS) || 120000,
   });
 
   // Contract check: rendered duration must match the audio the mux expects.
