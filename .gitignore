@@ -29,3 +29,10 @@ remotion/public/run/
 
 # Claude Code worktrees (local only) — keep skills/ committable
 .claude/worktrees/
+
+# Local dev-server config — its configurations point at .claude/worktrees/ paths
+# that only exist on one machine.
+.claude/launch.json
+
+# Wrangler build/deploy cache
+.wrangler/
