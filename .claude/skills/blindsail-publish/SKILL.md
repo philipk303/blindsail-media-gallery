@@ -57,7 +57,7 @@ Visuals render via Remotion (cards, crossfades, lower-thirds); on failure it fal
 - Present held/failed items (count + reasons) to the owner. For any they approve, use `clearHold(manifest, id, 'screened')` from `lib/manifest.mjs` — it resets `held`/`holdReason` and the state together (hand-editing only `state` leaves `held: true`, and the item would be silently skipped at publish). Then resume from Stage 4 for those items.
 - Show the owner the changed `media.json` and `media/<event>/` (offer Notepad). On approval:
   `git add media.json media/<event> && git commit -m "content: publish <event> sail" && git push`
-- Cloudflare Pages deploys on push. Confirm the deploy is green before calling it done.
+- Deploy is **not** automatic on push. This is a Cloudflare Worker with static assets, not Pages — run `npx wrangler deploy` after the push, then confirm the live site serves the new event before calling it done.
 
 ## Takedown
 Remove the item(s) from `media.json`, `git push`. For a video also set it private on YouTube. (README documents the one-liner.)
