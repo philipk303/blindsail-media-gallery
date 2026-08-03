@@ -1,7 +1,7 @@
 // scripts/pipeline/__tests__/drive-pull.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { planPulls } from '../drive-pull.mjs';
+import { planPulls, planMove } from '../drive-pull.mjs';
 
 const remote = [
   { id: 'f1', name: 'IMG_1234.HEIC', mimeType: 'image/heic' },
@@ -24,4 +24,9 @@ test('planPulls classifies HEIC/JPEG as photo and mov/mp4 as video', () => {
   assert.equal(kinds.f1, 'photo');
   assert.equal(kinds.f2, 'video');
   assert.equal(kinds.f3, undefined); // txt dropped
+});
+
+test('planMove re-parents the file from the source folder to the destination folder', () => {
+  const move = planMove('f1', 'volunteerFolder', 'processedFolder');
+  assert.deepEqual(move, { fileId: 'f1', addParents: 'processedFolder', removeParents: 'volunteerFolder' });
 });

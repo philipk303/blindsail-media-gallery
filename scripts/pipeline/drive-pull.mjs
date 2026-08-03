@@ -27,6 +27,11 @@ export function planPulls(remoteFiles, seenIds, eventId) {
   return plan;
 }
 
+// Pure: describe the Drive re-parent for a just-downloaded file.
+export function planMove(sourceId, fromFolderId, toFolderId) {
+  return { fileId: sourceId, addParents: toFolderId, removeParents: fromFolderId };
+}
+
 // --- gws adapters (not unit-tested; validated by the live run) ---
 
 function gws(args) {
@@ -49,6 +54,10 @@ function download(fileId, destPath) {
   gws(['drive', 'files', 'get', '--params', JSON.stringify({ fileId, alt: 'media' }), '--output', destPath]);
 }
 
+function moveFile({ fileId, addParents, removeParents }) {
+  gws(['drive', 'files', 'update', '--params', JSON.stringify({ fileId, addParents, removeParents, fields: 'id,parents' })]);
+}
+
 // Entry point: node drive-pull.mjs <event-iso-date>
 export async function main(isoDate) {
   const cfg = loadConfig();
@@ -62,15 +71,31 @@ export async function main(isoDate) {
   const remote = listRemote(cfg.driveFolderId);
   const plan = planPulls(remote, seen, eventId);
 
+  let moveFailures = 0;
   for (const p of plan) {
     // Prefix with the Drive file id so two volunteers' identical camera
     // filenames (IMG_1234.HEIC) can't overwrite each other in incoming/.
     const localName = `${p.sourceId.slice(0, 8)}-${p.sourceFile}`;
     download(p.sourceId, path.join(paths.incoming, localName));
     addItem(manifest, { id: p.id, kind: p.kind, sourceFile: localName, sourceId: p.sourceId, date: isoDate });
+
+    // Move out of the volunteer folder so a lost/local-only manifest can
+    // never cause a re-download: the source folder listing is the dedup
+    // state, not just manifest.json. A failed move is logged, not fatal —
+    // the file was already downloaded successfully, and aborting here would
+    // stop every other new item in this run from being pulled too.
+    try {
+      moveFile(planMove(p.sourceId, cfg.driveFolderId, cfg.processedFolderId));
+    } catch (err) {
+      moveFailures += 1;
+      console.error(`Warning: failed to move ${p.sourceFile} (${p.sourceId}) to Processed/: ${err.message}`);
+    }
   }
   saveManifest(paths.manifest, manifest);
   console.log(`Pulled ${plan.length} new file(s) into ${paths.incoming}; manifest has ${manifest.items.length} item(s).`);
+  if (moveFailures > 0) {
+    console.error(`${moveFailures} file(s) downloaded but not moved to Processed/ — still in the volunteer folder, will be re-listed next run.`);
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
